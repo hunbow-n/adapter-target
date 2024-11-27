@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>ru.qwep</groupId>
+    <artifactId>myadapter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>myadapter</name>
+    <description>myadapter</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+<!--        Зависимость с адаптером-->
+        <dependency>
+            <groupId>ru.qwep</groupId>
+            <artifactId>vendor-adapter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+<!--        Тесты адаптера-->
+        <dependency>
+            <groupId>ru.qwep</groupId>
+            <artifactId>vendor-adapter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+<!--Настройка скачивания из удаленного репозитория nexus-->
+    <repositories>
+        <repository>
+            <id>nexus-repo</id>
+            <url>https://nexus.qwep.ru/repository/qwep/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+
+    <build>
+        <plugins>
+<!--                   Копирует тесты из зависимости в папку target/test-classes -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-tests-to-main-directory</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>ru.qwep</groupId>
+                                    <artifactId>vendor-adapter</artifactId>
+                                    <version>0.0.1-SNAPSHOT</version>
+                                    <classifier>tests</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                                    <includes>**/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
